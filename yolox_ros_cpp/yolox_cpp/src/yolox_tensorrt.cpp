@@ -1,4 +1,5 @@
 #include "yolox_cpp/yolox_tensorrt.hpp"
+#include <stdexcept>
 
 namespace yolox_cpp
 {
@@ -66,11 +67,24 @@ namespace yolox_cpp
         CHECK(cudaMalloc(&this->inference_buffers_[this->inputIndex_], 3 * this->input_h_ * this->input_w_ * sizeof(float)));
         CHECK(cudaMalloc(&this->inference_buffers_[this->outputIndex_], this->output_size_ * sizeof(float)));
 
-        assert(this->context_->setInputShape(input_name, input_dims));
-        assert(this->context_->allInputDimensionsSpecified());
+        // These calls must execute even when assertions are disabled.
+        if (!this->context_->setInputShape(input_name, input_dims))
+        {
+            throw std::runtime_error("failed to set TensorRT input shape");
+        }
+        if (!this->context_->allInputDimensionsSpecified())
+        {
+            throw std::runtime_error("TensorRT input dimensions are not specified");
+        }
 
-        assert(this->context_->setTensorAddress(input_name, this->inference_buffers_[this->inputIndex_]));
-        assert(this->context_->setTensorAddress(output_name, this->inference_buffers_[this->outputIndex_]));
+        if (!this->context_->setTensorAddress(input_name, this->inference_buffers_[this->inputIndex_]))
+        {
+            throw std::runtime_error("failed to set TensorRT input tensor address");
+        }
+        if (!this->context_->setTensorAddress(output_name, this->inference_buffers_[this->outputIndex_]))
+        {
+            throw std::runtime_error("failed to set TensorRT output tensor address");
+        }
 
         // Prepare GridAndStrides
         if (this->p6_)
