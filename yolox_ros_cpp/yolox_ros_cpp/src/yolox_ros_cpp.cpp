@@ -20,7 +20,8 @@ namespace yolox_ros_cpp
 
         if (this->params_.imshow_isshow)
         {
-            cv::namedWindow("yolox", cv::WINDOW_AUTOSIZE);
+            cv::namedWindow("yolox", cv::WINDOW_NORMAL | cv::WINDOW_KEEPRATIO);
+            cv::resizeWindow("yolox", this->params_.imshow_width, this->params_.imshow_height);
         }
 
         if (this->params_.class_labels_path != "")

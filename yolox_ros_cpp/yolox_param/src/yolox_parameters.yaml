@@ -3,6 +3,18 @@ yolox_parameters:
     type: bool
     description: "Enable or disable imshow."
     default_value: false
+  imshow_width:
+    type: int
+    description: "Initial display window width in pixels."
+    default_value: 960
+    validation:
+      gt<>: [0]
+  imshow_height:
+    type: int
+    description: "Initial display window height in pixels."
+    default_value: 540
+    validation:
+      gt<>: [0]
   model_path:
     type: string
     description: "Path to the model file."
